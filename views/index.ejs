@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es" class="<%= typeof isDarkMode !== 'undefined' && isDarkMode ? 'dark' : '' %>">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= titulo %> - MathMaster
+    </title>
+    <!-- Incluye Tailwind CSS CDN para estilos modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para usar colores y fuentes personalizados
+        tailwind.config = {
+            darkMode: 'class', // Habilita el modo oscuro basado en la clase 'dark'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'], // Define la fuente Inter
+                    },
+                    colors: {
+                        // Define una paleta de colores personalizada si lo deseas
+                        primary: '#4F46E5', // Indigo 600
+                        secondary: '#8B5CF6', // Violet 500
+                    },
+                    animation: {
+                        // Define las animaciones personalizadas
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+                        'slide-in-left': 'slideInLeft 0.4s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.4s ease-out forwards',
+                        'pulse-custom': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'progress-bar': 'progressBar 1.5s ease-out forwards',
+                        'bounce-in': 'bounceIn 0.8s ease-out forwards',
+                        'scale-up': 'scaleUp 0.5s ease-out forwards',
+                    },
+                    // Añade utilidades para retrasos de animación
+                    animationDelay: { // Custom animation delays
+                        '0': '0s',
+                        '100': '0.1s',
+                        '150': '0.15s',
+                        '200': '0.2s',
+                        '300': '0.3s',
+                        '400': '0.4s',
+                        '500': '0.5s',
+                        '600': '0.6s',
+                        '700': '0.7s',
+                        '800': '0.8s',
+                        '900': '0.9s',
+                        '1000': '1s',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Importa la fuente Inter desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Estilos CSS personalizados y keyframes para animaciones */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Animaciones Keyframes */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .5;
+            }
+        }
+
+        @keyframes progressBar {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 45%;
+            }
+
+            /* Ajusta esto al porcentaje deseado */
+        }
+
+        @keyframes bounceIn {
+
+            0%,
+            20%,
+            40%,
+            60%,
+            80%,
+            100% {
+                transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+
+            0% {
+                opacity: 0;
+                transform: scale3d(0.3, 0.3, 0.3);
+            }
+
+            20% {
+                transform: scale3d(1.1, 1.1, 1.1);
+            }
+
+            40% {
+                transform: scale3d(0.9, 0.9, 0.9);
+            }
+
+            60% {
+                opacity: 1;
+                transform: scale3d(1.03, 1.03, 1.03);
+            }
+
+            80% {
+                transform: scale3d(0.97, 0.97, 0.97);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale3d(1, 1, 1);
+            }
+        }
+
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Clases de utilidad de animación */
+        .animate-fade-in {
+            animation-name: fadeIn;
+        }
+
+        .animate-fade-in-up {
+            animation-name: fadeInUp;
+        }
+
+        .animate-fade-in-down {
+            animation-name: fadeInDown;
+        }
+
+        .animate-slide-in-left {
+            animation-name: slideInLeft;
+        }
+
+        .animate-slide-in-right {
+            animation-name: slideInRight;
+        }
+
+        .animate-pulse-custom {
+            animation-name: pulse;
+        }
+
+        .animate-progress-bar {
+            animation-name: progressBar;
+        }
+
+        .animate-bounce-in {
+            animation-name: bounceIn;
+        }
+
+        .animate-scale-up {
+            animation-name: scaleUp;
+        }
+
+        /* Estilos para la barra de desplazamiento en modo oscuro */
+        .dark ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #4B5563;
+            border-radius: 10px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #6B7280;
+            border-radius: 10px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-inter transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header
+        class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 shadow-lg rounded-b-xl animate-fade-in-down">
+        <div class="flex items-center">
+            <button id="sidebarToggle" class="text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2 lg:hidden transform hover:scale-105 transition-transform duration-200" aria-label="Toggle navigation">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <h1 class="text-3xl font-extrabold text-blue-700 dark:text-blue-400 ml-3 tracking-wide animate-bounce-in">
+                MathMaster</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <!-- Asumiendo que userId es una variable EJS pasada por el servidor -->
+            <% if (typeof userId !=='undefined' && userId) { %>
+                <span class="text-sm text-gray-500 dark:text-gray-400 hidden md:block px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full shadow-inner">
+                    ID de Usuario: <%= userId %>
+                </span>
+                <% } %>
+                    <button id="darkModeToggle" class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110" aria-label="Toggle dark mode">
+                <!-- Icono de sol/luna, se actualizará con JS -->
+                <svg class="w-6 h-6 sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm-4 8a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm10.293-2.293a1 1 0 010 1.414l-1 1a1 1 0 11-1.414-1.414l1-1a1 1 0 011.414 0zM5.707 14.293a1 1 0 010-1.414l1-1a1 1 0 10-1.414-1.414l-1 1a1 1 0 011.414 1.414zM16 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM3 10a1 1 0 01-1 1H1a1 1 0 110-2h1a1 1 0 011 1z" clip-rule="evenodd"></path></svg>
+                <svg class="w-6 h-6 moon-icon hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+                    <!-- Botón de Ajustes (nuevo) -->
+                    <div class="relative">
+                        <button id="settingsToggle" class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110" aria-label="Settings menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.562.345 1.2.588 1.874.684a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                        <div id="settingsMenu"
+                            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50 hidden origin-top-right scale-95 opacity-0 transition-all duration-200 ease-out">
+                            <!-- El enlace "Acerca de MathMaster" ha sido movido a la barra lateral principal -->
+                            <!-- Puedes añadir más opciones de ajustes aquí si lo deseas -->
+                        </div>
+                    </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 flex-col lg:flex-row">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-2xl transform -translate-x-full opacity-0 lg:relative lg:translate-x-0 lg:opacity-100 transition-transform duration-300 ease-in-out lg:flex-shrink-0 lg:w-64 border-r border-gray-200 dark:border-gray-700">
+            <div
+                class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-gray-700 dark:to-gray-900 text-white rounded-tr-lg">
+                <h2 class="text-xl font-bold tracking-wide">Módulos</h2>
+                <button id="sidebarClose" class="lg:hidden text-white focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-md p-1 transform hover:scale-110 transition-transform duration-200" aria-label="Close sidebar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="mt-4 px-3">
+                <ul>
+                    <li>
+                        <a href="/"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md bg-blue-600 text-white font-semibold shadow-lg animate-slide-in-left delay-100">
+                            Inicio
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/insertar-polinomios"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 animate-slide-in-left delay-200">
+                            Polinomios
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/insertar-desigualdades"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 animate-slide-in-left delay-300">
+                            Desigualdades
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/insertar-algebra-general"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 animate-slide-in-left delay-400">
+                            Álgebra General
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/calculadora-grafica"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 animate-slide-in-left delay-500">
+                            Calculadora Gráfica
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/chatbot-matematico"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700 animate-slide-in-left delay-600">
+                            Chatbot Matemático
+                        </a>
+                    </li>
+                    <!-- NUEVO: Enlace a "Acerca de MathMaster" en la barra lateral con estilo verde oscuro -->
+                    <li class="mt-1">
+                        <a href="/about-mathmaster"
+                            class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-800 animate-slide-in-left delay-700">
+                            Acerca de MathMaster
+                        </a>
+                    </li>
+                    <!-- Puedes añadir más enlaces a otros módulos aquí -->
+                </ul>
+            </nav>
+            <div
+                class="p-4 mt-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-b-xl">
+                <h3 class="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">Progreso General</h3>
+                <div class="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700 shadow-inner">
+                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full animate-progress-bar"
+                        style="width: 45%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">45% Completado</p>
+                <!-- El ID de usuario ha sido eliminado de aquí según tu solicitud -->
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 lg:p-8 overflow-y-auto animate-fade-in">
+            <section
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8 border border-gray-100 dark:border-gray-700 animate-fade-in-up">
+                <h2
+                    class="text-4xl font-extrabold text-blue-700 dark:text-blue-400 mb-6 text-center leading-tight animate-scale-up">
+                    ¡Bienvenido a <span class="text-purple-600 dark:text-purple-300">MathMaster</span>!
+                </h2>
+                <p
+                    class="text-xl text-gray-700 dark:text-gray-300 mb-6 text-center max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-100">
+                    La aplicación definitiva para transformar tu aprendizaje de las matemáticas en una experiencia
+                    interactiva, dinámica y efectiva.
+                </p>
+                <p
+                    class="text-lg text-gray-600 dark:text-gray-400 mb-8 text-center max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200">
+                    Explora nuestros módulos de contenido cuidadosamente estructurados, interactúa con el asistente de
+                    IA MathBot para resolver tus dudas al instante, y visualiza conceptos complejos con nuestra
+                    calculadora gráfica avanzada.
+                </p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div
+                        class="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-700 dark:to-gray-900 p-6 rounded-xl shadow-lg border border-blue-200 dark:border-gray-600 transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-300">
+                        <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-3">Asistente de IA Integrado
+                        </h3>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Resuelve tus dudas al instante con MathBot, tu tutor personal de matemáticas. Pregunta sobre
+                            cualquier concepto, ejercicio o teoría, y recibe explicaciones claras y precisas.
+                        </p>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-green-100 to-teal-100 dark:from-gray-700 dark:to-gray-900 p-6 rounded-xl shadow-lg border border-green-200 dark:border-gray-600 transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-400">
+                        <h3 class="text-2xl font-bold text-green-800 dark:text-green-300 mb-3">Calculadora Gráfica
+                            Avanzada</h3>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Visualiza funciones, ecuaciones y desigualdades de forma interactiva. Experimenta con
+                            parámetros y observa cómo cambian los gráficos en tiempo real.
+                        </p>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-yellow-100 to-orange-100 dark:from-gray-700 dark:to-gray-900 p-6 rounded-xl shadow-lg border border-yellow-200 dark:border-gray-600 transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-500">
+                        <h3 class="text-2xl font-bold text-orange-800 dark:text-orange-300 mb-3">Lecciones Estructuradas
+                            por Módulos</h3>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Aprende matemáticas a tu propio ritmo con lecciones organizadas por temas, desde álgebra
+                            básica hasta cálculo avanzado. Cada módulo está diseñado para un aprendizaje progresivo.
+                        </p>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-red-100 to-pink-100 dark:from-gray-700 dark:to-gray-900 p-6 rounded-xl shadow-lg border border-red-200 dark:border-gray-600 transform hover:scale-105 transition-transform duration-300 animate-fade-in-up delay-600">
+                        <h3 class="text-2xl font-bold text-pink-800 dark:text-pink-300 mb-3">Interfaz Intuitiva y
+                            Moderna</h3>
+                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            Disfruta de una experiencia de usuario fluida y agradable con un diseño limpio, responsivo y
+                            fácil de navegar, tanto en modo claro como oscuro.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <!-- Puedes añadir más secciones aquí si lo deseas -->
+        </main>
+    </div>
+
+    <script>
+        // Wrap the entire script in an IIFE to create a private scope
+        (function() {
+            // JavaScript para manejar el modo oscuro y la barra lateral
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const sidebar = document.getElementById('sidebar');
+            const htmlElement = document.documentElement;
+            const settingsToggle = document.getElementById('settingsToggle'); // Nuevo
+            const settingsMenu = document.getElementById('settingsMenu');     // Nuevo
+
+            // Función para aplicar el modo oscuro
+            function applyDarkMode(isDark) {
+                if (isDark) {
+                    htmlElement.classList.add('dark');
+                    localStorage.setItem('mathmaster_dark_mode', 'true');
+                    // Ocultar icono de sol, mostrar icono de luna
+                    if (darkModeToggle) { // Asegurarse de que el elemento exista
+                        darkModeToggle.querySelector('.sun-icon').classList.add('hidden');
+                        darkModeToggle.querySelector('.moon-icon').classList.remove('hidden');
+                    }
+                } else {
+                    htmlElement.classList.remove('dark');
+                    localStorage.setItem('mathmaster_dark_mode', 'false');
+                    // Mostrar icono de sol, ocultar icono de luna
+                    if (darkModeToggle) { // Asegurarse de que el elemento exista
+                        darkModeToggle.querySelector('.sun-icon').classList.remove('hidden');
+                        darkModeToggle.querySelector('.moon-icon').classList.add('hidden');
+                    }
+                }
+            }
+
+            // Cargar preferencia de modo oscuro al iniciar
+            const savedDarkMode = localStorage.getItem('mathmaster_dark_mode');
+            if (savedDarkMode === 'true') {
+                applyDarkMode(true);
+            } else if (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Si no hay preferencia guardada, pero el sistema prefiere oscuro
+                applyDarkMode(true);
+            } else {
+                applyDarkMode(false);
+            }
+
+            // Event listener para el botón de modo oscuro
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', () => {
+                    applyDarkMode(!htmlElement.classList.contains('dark'));
+                });
+            }
+
+            // Event listener para el botón de ajustes (NUEVO)
+            if (settingsToggle) {
+                settingsToggle.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Evita que el clic se propague al documento y cierre el menú inmediatamente
+                    if (settingsMenu) {
+                        settingsMenu.classList.toggle('hidden');
+                        settingsMenu.classList.toggle('scale-95');
+                        settingsMenu.classList.toggle('opacity-0');
+                        settingsMenu.classList.toggle('scale-100');
+                        settingsMenu.classList.toggle('opacity-100');
+                    }
+                });
+            }
+
+            // Cerrar el menú de ajustes si se hace clic fuera (NUEVO)
+            document.addEventListener('click', (event) => {
+                if (settingsMenu && !settingsMenu.contains(event.target) && !settingsToggle.contains(event.target)) {
+                    settingsMenu.classList.add('hidden', 'scale-95', 'opacity-0');
+                    settingsMenu.classList.remove('scale-100', 'opacity-100');
+                }
+            });
+
+
+            // Event listeners para la barra lateral
+            if (sidebarToggle) { // Check if element exists
+                sidebarToggle.addEventListener('click', () => {
+                    if (sidebar) { // Check if element exists
+                        sidebar.classList.remove('-translate-x-full');
+                        sidebar.classList.add('opacity-100'); // Añadir opacidad al abrir
+                        sidebar.classList.remove('opacity-0'); // Remover opacidad inicial
+                    }
+                });
+            }
+
+            if (sidebarClose) { // Check if element exists
+                sidebarClose.addEventListener('click', () => {
+                    if (sidebar) { // Check if element exists
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.remove('opacity-100'); // Remover opacidad al cerrar
+                        sidebar.classList.add('opacity-0'); // Añadir opacidad para que se desvanezca
+                    }
+                });
+            }
+
+            // Cerrar sidebar al hacer clic fuera en pantallas pequeñas
+            document.addEventListener('click', (event) => {
+                if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && window.innerWidth < 1024) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('opacity-100');
+                    sidebar.classList.add('opacity-0');
+                }
+            });
+
+            // Asegurarse de que la barra lateral sea visible por defecto en pantallas grandes
+            function checkSidebarVisibility() {
+                if (window.innerWidth >= 1024) {
+                    sidebar.classList.remove('-translate-x-full', 'opacity-0');
+                    sidebar.classList.add('opacity-100');
+                } else {
+                    // En pantallas pequeñas, si no está abierta, asegúrate de que esté oculta y con opacidad 0
+                    if (!sidebar.classList.contains('opacity-100')) {
+                        sidebar.classList.add('-translate-x-full', 'opacity-0');
+                    }
+                }
+            }
+
+            // Ejecutar al cargar y al redimensionar
+            window.addEventListener('load', checkSidebarVisibility);
+            window.addEventListener('resize', checkSidebarVisibility);
+        })(); // End of IIFE
+    </script>
+</body>
+
+</html>

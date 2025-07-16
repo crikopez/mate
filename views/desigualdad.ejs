@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" class="<%= typeof isDarkMode !== 'undefined' && isDarkMode ? 'dark' : '' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> - MATHPRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para usar colores y fuentes personalizados
+        tailwind.config = {
+            darkMode: 'class', // Habilita el modo oscuro basado en la clase 'dark'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'], // Define la fuente Inter
+                    },
+                    colors: {
+                        // Define una paleta de colores personalizada si lo deseas
+                        primary: '#4F46E5', // Indigo 600
+                        secondary: '#8B5CF6', // Violet 500
+                    },
+                    animation: {
+                        // Define las animaciones personalizadas
+                        'pulse-custom': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-dot': 'bounceDot 0.6s infinite alternate', /* Animación para los puntos de carga */
+                    },
+                    animationDelay: { // Custom animation delays
+                        '0': '0s',
+                        '100': '0.1s',
+                        '150': '0.15s',
+                        '200': '0.2s',
+                        '300': '0.3s',
+                        '400': '0.4s',
+                        '500': '0.5s',
+                        '600': '0.6s',
+                        '700': '0.7s',
+                        '800': '0.8s',
+                        '900': '0.9s',
+                        '1000': '1s',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            transition: background-color 0.3s ease; /* Transición suave para el fondo del body */
+        }
+        .dark body {
+            background-color: #1f2937; /* Dark gray background */
+        }
+        pre {
+            white-space: pre-wrap; /* Ensures long lines wrap */
+            word-wrap: break-word; /* Breaks words if necessary */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Estilos para la barra de desplazamiento en modo oscuro */
+        .dark ::-webkit-scrollbar { width: 8px; }
+        .dark ::-webkit-scrollbar-track { background: #4B5563; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #6B7280; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-2xl text-center transition-colors duration-300">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-700 dark:text-blue-400">
+                <%= titulo %>
+            </h1>
+            <!-- Botón de Modo Oscuro -->
+            <button id="darkModeToggle" class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110" aria-label="Toggle dark mode">
+                <!-- Icono de sol/luna, se actualizará con JS -->
+                <svg class="w-6 h-6 sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm-4 8a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm10.293-2.293a1 1 0 010 1.414l-1 1a1 1 0 11-1.414-1.414l1-1a1 1 0 011.414 0zM5.707 14.293a1 1 0 010-1.414l1-1a1 1 0 10-1.414-1.414l-1 1a1 1 0 011.414 1.414zM16 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM3 10a1 1 0 01-1 1H1a1 1 0 110-2h1a1 1 0 011 1z" clip-rule="evenodd"></path></svg>
+                <svg class="w-6 h-6 moon-icon hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+        </div>
+        
+        <div class="mb-6 text-left">
+            <p class="text-xl text-gray-800 dark:text-gray-200 font-semibold mb-3 transition-colors duration-300">Desigualdad ingresada:</p>
+            <p class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-gray-700 dark:text-gray-100 text-lg break-words transition-colors duration-300"><%= desigualdad %></p>
+        </div>
+
+        <div class="mb-8 text-left">
+            <p class="text-xl text-gray-800 dark:text-gray-200 font-semibold mb-3 transition-colors duration-300">Explicación:</p>
+            <pre class="bg-blue-50 dark:bg-blue-800 p-4 rounded-lg text-blue-800 dark:text-blue-100 text-lg leading-relaxed transition-colors duration-300"><%= resolucion %></pre>
+            <!-- Si quieres mostrar 'analisis' en lugar de 'resolucion' para la acción 'explorar', puedes usar: -->
+            <!-- <pre class="bg-blue-50 p-4 rounded-lg text-blue-800 text-lg leading-relaxed"><%= analisis %></pre> -->
+        </div>
+
+        <div class="space-y-4">
+            <a href="/insertar-desigualdades"
+               class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-md">
+                Analizar Otra Desigualdad
+            </a>
+            <a href="/"
+               class="block w-full text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-lg transition duration-300 ease-in-out">
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlElement = document.documentElement; // Referencia al elemento <html>
+
+        // Función para aplicar el modo oscuro
+        function applyDarkMode(isDark) {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('desigualdad_dark_mode', 'true');
+                // Ocultar icono de sol, mostrar icono de luna
+                if (darkModeToggle) {
+                    darkModeToggle.querySelector('.sun-icon').classList.add('hidden');
+                    darkModeToggle.querySelector('.moon-icon').classList.remove('hidden');
+                }
+            } else {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('desigualdad_dark_mode', 'false');
+                // Mostrar icono de sol, ocultar icono de luna
+                if (darkModeToggle) {
+                    darkModeToggle.querySelector('.sun-icon').classList.remove('hidden');
+                    darkModeToggle.querySelector('.moon-icon').classList.add('hidden');
+                }
+            }
+        }
+
+        // Cargar preferencia de modo oscuro al iniciar
+        const savedDarkMode = localStorage.getItem('desigualdad_dark_mode');
+        if (savedDarkMode === 'true') {
+            applyDarkMode(true);
+        } else if (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // Si no hay preferencia guardada, pero el sistema prefiere oscuro
+            applyDarkMode(true);
+        } else {
+            applyDarkMode(false);
+        }
+
+        // Event listener para el botón de modo oscuro
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                applyDarkMode(!htmlElement.classList.contains('dark'));
+            });
+        }
+    </script>
+</body>
+</html>

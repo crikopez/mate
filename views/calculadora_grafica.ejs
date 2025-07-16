@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> - MathMaster</title>
+    <!-- Incluye Tailwind CSS CDN para estilos modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para usar colores y fuentes personalizados
+        tailwind.config = {
+            darkMode: 'class', // Habilita el modo oscuro basado en la clase 'dark'
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'], // Define la fuente Inter
+                    },
+                    colors: {
+                        // Paleta de colores para las funciones
+                        'func-red': '#EF4444',
+                        'func-green': '#22C55E',
+                        'func-blue': '#3B82F6',
+                        'func-orange': '#F97316',
+                        'func-indigo': '#6366F1',
+                        'func-pink': '#EC4899',
+                        'func-teal': '#14B8A6',
+                        'func-purple': '#8B5CF6',
+                    },
+                    animation: {
+                        // Define las animaciones personalizadas
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'scale-in': 'scaleIn 0.5s ease-out forwards',
+                        'bounce-in': 'bounceIn 0.8s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Importa la fuente Inter desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos globales y reseteos */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f3f4f6; /* Light gray background */
+            /* overflow: hidden; <--- ELIMINADO: Esto impedía el scroll */
+        }
+        .dark body {
+            background-color: #1f2937; /* Dark gray background */
+        }
+
+        /* Estilos del Canvas */
+        canvas {
+            border: 1px solid #cbd5e1; /* border-slate-300 */
+            background-color: #ffffff;
+            touch-action: none; /* Deshabilita acciones táctiles predeterminadas para pan/zoom personalizado */
+            cursor: grab; /* Cursor predeterminado para arrastrar */
+        }
+        .dark canvas {
+            background-color: #111827; /* Fondo más oscuro para el canvas en modo oscuro */
+            border-color: #4b5563; /* Borde más oscuro */
+        }
+
+        /* Animaciones Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+            0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+            20% { transform: scale3d(1.1, 1.1, 1.1); }
+            40% { transform: scale3d(0.9, 0.9, 0.9); }
+            60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+            80% { transform: scale3d(0.97, 0.97, 0.97); }
+            100% { opacity: 1; transform: scale3d(1, 1, 1); }
+        }
+
+        /* Clases de utilidad de animación */
+        .animate-fade-in { animation-name: fadeIn; }
+        .animate-slide-in-up { animation-name: fadeInUp; }
+        .animate-scale-in { animation-name: scaleIn; }
+        .animate-bounce-in { animation-name: bounceIn; }
+
+        /* Estilos para la barra de desplazamiento en modo oscuro */
+        .dark ::-webkit-scrollbar { width: 8px; }
+        .dark ::-webkit-scrollbar-track { background: #4B5563; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #6B7280; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+        /* Estilos específicos del teclado */
+        .keypad-button {
+            @apply p-3 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-xl
+                   hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200
+                   shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95;
+        }
+        .keypad-button.op {
+            @apply bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200;
+        }
+        .keypad-button.func {
+            @apply bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-200 text-base; /* Texto más pequeño para funciones */
+        }
+        .keypad-button.action {
+            @apply bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200;
+        }
+        .keypad-button.special {
+            @apply bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200;
+        }
+
+        /* Estilos para los botones de zoom pequeños */
+        .zoom-button {
+            @apply w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300
+                   flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600
+                   transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500
+                   shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95;
+        }
+        .zoom-icon {
+            @apply w-5 h-5;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-stretch justify-start min-h-screen p-0 transition-colors duration-300">
+    <!-- Contenedor principal de la calculadora, ahora ocupa más espacio -->
+    <div class="bg-white dark:bg-gray-800 p-4 md:p-8 shadow-2xl w-full flex-grow flex flex-col">
+        <div class="flex justify-end mb-2">
+            <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110" aria-label="Toggle dark mode">
+                <svg class="w-6 h-6 sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm-4 8a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm10.293-2.293a1 1 0 010 1.414l-1 1a1 1 0 11-1.414-1.414l1-1a1 1 0 011.414 0zM5.707 14.293a1 1 0 010-1.414l1-1a1 1 0 10-1.414-1.414l-1 1a1 1 0 011.414 1.414zM16 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM3 10a1 1 0 01-1 1H1a1 1 0 110-2h1a1 1 0 011 1z" clip-rule="evenodd"></path></svg>
+                <svg class="w-6 h-6 moon-icon hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+        </div>
+
+        <h1 class="text-2xl md:text-4xl font-extrabold text-indigo-700 dark:text-indigo-400 mb-4 md:mb-6 animate-slide-in-up">Calculadora Gráfica Interactiva</h1>
+        <p class="text-gray-700 dark:text-gray-300 mb-2 md:mb-4 animate-fade-in delay-100">Introduce una función de 'x' (ej. `x^2`, `sin(x)`, `2*x + 3`).</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 md:mb-4 animate-fade-in delay-200">La multiplicación implícita (ej. `2x`, `x(x+1)`) se intentará interpretar, pero usa `*` para mayor precisión.</p>
+
+        <div class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-6 animate-slide-in-up delay-300">
+            <input
+                type="text"
+                id="functionInput"
+                placeholder="y = x^2 + 2x - 1"
+                class="w-full px-2 py-2 md:px-4 md:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-gray-800 dark:text-gray-200 text-lg shadow-sm bg-white dark:bg-gray-700"
+            >
+            <!-- Botón para activar/desactivar el teclado -->
+            <button
+                id="toggleKeyboardButton"
+                class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110 shadow-md"
+                aria-label="Toggle virtual keyboard"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            </button>
+            <button
+                id="addFunctionButton"
+                class="w-full md:w-1/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+            >
+                Añadir Función
+            </button>
+        </div>
+
+        <div id="errorMessage" class="text-red-600 dark:text-red-400 font-bold text-lg mb-2 md:mb-4 hidden animate-fade-in"></div>
+
+        <!-- Contenedor del Canvas para que ocupe el espacio restante -->
+        <div class="flex-grow relative min-h-[300px] md:min-h-[400px]">
+            <canvas id="graphCanvas" class="rounded-lg shadow-inner w-full h-full"></canvas>
+        </div>
+
+        <!-- Botones de Zoom y Controles (ahora en el flujo normal) -->
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4 mt-4 md:mt-6 animate-slide-in-up delay-400">
+            <button id="zoomInButton" class="zoom-button bg-green-600 hover:bg-green-700 text-white" aria-label="Zoom in">
+                <svg class="zoom-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3h-6"></path></svg>
+            </button>
+            <button id="zoomOutButton" class="zoom-button bg-red-600 hover:bg-red-700 text-white" aria-label="Zoom out">
+                <svg class="zoom-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM9 10h6"></path></svg>
+            </button>
+            <button id="resetViewButton" class="zoom-button bg-yellow-600 hover:bg-yellow-700 text-white" aria-label="Reset view">
+                <svg class="zoom-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13l-3 3m0-6l3 3"></path></svg>
+            </button>
+            <button id="clearAllButton" class="zoom-button bg-gray-600 hover:bg-gray-700 text-white" aria-label="Clear all">
+                <svg class="zoom-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+            <button id="examplesButton" class="zoom-button bg-blue-600 hover:bg-blue-700 text-white" aria-label="Examples">
+                <svg class="zoom-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4.293 18.707l.707-.707M1.636 15.364l.707-.707M12 21v-1m-6.364-1.636l.707-.707M3 12H2m14.293-9.293l.707-.707M7.707 4.293L8.414 3.586M10 10l-2 2m0 0l-2 2m2-2l2-2m-2 2l-2-2"></path></svg>
+            </button>
+        </div>
+
+        <!-- Lista de funciones graficadas -->
+        <div id="functionList" class="mt-4 md:mt-6 text-left p-2 md:p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-inner animate-slide-in-up delay-600">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 md:mb-3">Funciones Graficadas:</h3>
+            <ul id="functionsUl" class="space-y-1 md:space-y-2">
+                <!-- Las funciones se añadirán aquí dinámicamente -->
+            </ul>
+        </div>
+
+        <!-- Teclado Virtual (fijo en la parte inferior, oculto por defecto) -->
+        <div id="virtualKeyboard" class="fixed bottom-0 left-0 w-full p-2 md:p-4 bg-gray-100 dark:bg-gray-700 rounded-t-xl shadow-xl transform translate-y-full opacity-0 transition-all duration-300 z-50">
+            <div class="grid grid-cols-5 md:grid-cols-10 gap-1 md:gap-2">
+                <!-- Fila 1 -->
+                <button class="keypad-button special text-base md:text-xl" data-value="x">x</button>
+                <button class="keypad-button special text-base md:text-xl" data-value="y">y</button>
+                <button class="keypad-button special text-base md:text-xl" data-value="pi">π</button>
+                <button class="keypad-button special text-base md:text-xl" data-value="e">e</button>
+                <button class="keypad-button text-base md:text-xl" data-value="7">7</button>
+                <button class="keypad-button text-base md:text-xl" data-value="8">8</button>
+                <button class="keypad-button text-base md:text-xl" data-value="9">9</button>
+                <button class="keypad-button op text-base md:text-xl" data-value="*">×</button>
+                <button class="keypad-button op text-base md:text-xl" data-value="/">÷</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="sin(">sin</button>
+
+                <!-- Fila 2 -->
+                <button class="keypad-button func text-sm md:text-base" data-value="^2">x²</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="^3">x³</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="sqrt(">√</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="abs(">|x|</button>
+                <button class="keypad-button text-base md:text-xl" data-value="4">4</button>
+                <button class="keypad-button text-base md:text-xl" data-value="5">5</button>
+                <button class="keypad-button text-base md:text-xl" data-value="6">6</button>
+                <button class="keypad-button op text-base md:text-xl" data-value="+">+</button>
+                <button class="keypad-button op text-base md:text-xl" data-value="-">-</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="cos(">cos</button>
+
+                <!-- Fila 3 -->
+                <button class="keypad-button special text-base md:text-xl" data-value="(">(</button>
+                <button class="keypad-button special text-base md:text-xl" data-value=")">)</button>
+                <button class="keypad-button special text-base md:text-xl" data-value=".">.</button>
+                <button class="keypad-button special text-base md:text-xl" data-value="^">^</button>
+                <button class="keypad-button text-base md:text-xl" data-value="1">1</button>
+                <button class="keypad-button text-base md:text-xl" data-value="2">2</button>
+                <button class="keypad-button text-base md:text-xl" data-value="3">3</button>
+                <button class="keypad-button action text-base md:text-xl" data-value="backspace">⌫</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="tan(">tan</button>
+                <button class="keypad-button func text-sm md:text-base" data-value="log(">log</button>
+
+                <!-- Fila 4 -->
+                <button class="keypad-button special col-span-2 text-base md:text-xl" data-value="0">0</button>
+                <button class="keypad-button text-base md:text-xl" data-value="00">00</button>
+                <button class="keypad-button op text-base md:text-xl" data-value="=">=</button>
+                <button class="keypad-button action text-base md:text-xl" data-value="left">←</button>
+                <button class="keypad-button action text-base md:text-xl" data-value="right">→</button>
+            </div>
+        </div>
+
+        <div class="mt-4 md:mt-8 animate-fade-in delay-700">
+            <a href="/" class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium text-lg transition duration-300 ease-in-out">
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const functionInput = document.getElementById('functionInput');
+        const addFunctionButton = document.getElementById('addFunctionButton');
+        const toggleKeyboardButton = document.getElementById('toggleKeyboardButton'); // Nuevo botón para el teclado
+        
+        // Referencias a los botones de zoom y control (ahora en el flujo normal)
+        const zoomInButton = document.getElementById('zoomInButton');
+        const zoomOutButton = document.getElementById('zoomOutButton');
+        const resetViewButton = document.getElementById('resetViewButton');
+        const clearAllButton = document.getElementById('clearAllButton');
+        const examplesButton = document.getElementById('examplesButton'); 
+
+        const errorMessage = document.getElementById('errorMessage');
+        const functionsUl = document.getElementById('functionsUl');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const htmlElement = document.documentElement;
+        const virtualKeyboard = document.getElementById('virtualKeyboard');
+        // const zoomControls = document.getElementById('zoomControls'); // Ya no es necesario
+        
+        let scale = 50; 
+        let offsetX = 0; 
+        let offsetY = 0; 
+        const panSpeed = 0.5; 
+
+        let functionsToGraph = [];
+        const functionColors = [
+            '#EF4444', 
+            '#22C55E', 
+            '#3B82F6', 
+            '#F97316', 
+            '#6366F1', 
+            '#EC4899', 
+            '#14B8A6', 
+            '#8B5CF6', 
+        ];
+        let colorIndex = 0;
+
+        // Función para aplicar el modo oscuro
+        function applyDarkMode(isDark) {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('mathmaster_dark_mode_calc', 'true');
+                darkModeToggle.querySelector('.sun-icon').classList.add('hidden');
+                darkModeToggle.querySelector('.moon-icon').classList.remove('hidden');
+            } else {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('mathmaster_dark_mode_calc', 'false');
+                darkModeToggle.querySelector('.sun-icon').classList.remove('hidden');
+                darkModeToggle.querySelector('.moon-icon').classList.add('hidden');
+            }
+            redrawGraph(); 
+        }
+
+        // Cargar preferencia de modo oscuro al iniciar
+        const savedDarkMode = localStorage.getItem('mathmaster_dark_mode_calc');
+        if (savedDarkMode === 'true') {
+            applyDarkMode(true);
+        } else if (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyDarkMode(true);
+        } else {
+            applyDarkMode(false);
+        }
+
+        // Event listener para el botón de modo oscuro
+        darkModeToggle.addEventListener('click', () => {
+            applyDarkMode(!htmlElement.classList.contains('dark'));
+        });
+
+        // Función para mostrar mensajes de error
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Función para ocultar mensajes de error
+        function hideError() {
+            errorMessage.classList.add('hidden');
+            errorMessage.textContent = '';
+        }
+
+        // Función para parsear la expresión matemática de forma segura (limitada)
+        function parseFunction(expression) {
+            expression = expression.toLowerCase();
+            expression = expression.replace(/pi/g, 'Math.PI');
+            expression = expression.replace(/e/g, 'Math.E');
+            expression = expression.replace(/\^/g, '**');
+
+            expression = expression.replace(/sin\(/g, 'Math.sin(');
+            expression = expression.replace(/cos\(/g, 'Math.cos(');
+            expression = expression.replace(/tan\(/g, 'Math.tan(');
+            expression = expression.replace(/log\(/g, 'Math.log(');
+            expression = expression.replace(/sqrt\(/g, 'Math.sqrt(');
+            expression = expression.replace(/abs\(/g, 'Math.abs(');
+
+            // Manejar multiplicaciones implícitas
+            expression = expression.replace(/(\d+)([a-z])/g, '$1*$2');
+            expression = expression.replace(/(\d+)\(/g, '$1*(');
+            expression = expression.replace(/([a-z])\(/g, '$1*(');
+            expression = expression.replace(/\)(\d+)/g, ')*$1');
+            expression = expression.replace(/\)([a-z])/g, ')*$1');
+            expression = expression.replace(/([a-z])([a-z])/g, '$1*$2');
+
+            expression = expression.replace(/\s/g, '');
+
+            try {
+                return new Function('x', 'return ' + expression);
+            } catch (e) {
+                showError('Error al parsear la función: ' + e.message);
+                return null;
+            }
+        }
+
+        // Dibuja los ejes X e Y y la cuadrícula
+        function drawAxes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpia el canvas
+
+            const isDark = htmlElement.classList.contains('dark');
+            const gridColor = isDark ? '#374151' : '#cbd5e1'; 
+            const axisColor = isDark ? '#9CA3AF' : '#475569'; 
+            const labelColor = isDark ? '#D1D5DB' : '#64748b'; 
+            const originLabelColor = isDark ? '#F9FAFB' : '#1e293b'; 
+
+            // Dibuja la cuadrícula ligera
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 0.5;
+
+            // Líneas de cuadrícula verticales
+            for (let i = -offsetX % scale; i <= canvas.width; i += scale) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            // Líneas de cuadrícula horizontales
+            for (let i = -offsetY % scale; i <= canvas.height; i += scale) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+
+            // Dibuja los ejes principales
+            ctx.beginPath();
+            ctx.strokeStyle = axisColor;
+            ctx.lineWidth = 1.5; 
+
+            // Eje X
+            ctx.moveTo(0, offsetY);
+            ctx.lineTo(canvas.width, offsetY);
+            ctx.stroke();
+
+            // Eje Y
+            ctx.moveTo(offsetX, 0);
+            ctx.lineTo(offsetX, canvas.height);
+            ctx.stroke();
+
+            // Dibuja las marcas y etiquetas de los ejes
+            ctx.font = '12px Inter';
+            ctx.fillStyle = labelColor;
+
+            // Marcas y etiquetas del eje X
+            for (let i = -offsetX; i <= canvas.width - offsetX; i += scale) {
+                if (Math.abs(Math.round(i / scale)) > 0) { 
+                    ctx.fillText(Math.round(i / scale), offsetX + i - (Math.round(i / scale).toString().length * 4), offsetY + 15);
+                }
+            }
+
+            // Marcas y etiquetas del eje Y
+            for (let i = -offsetY; i <= canvas.height - offsetY; i += scale) {
+                if (Math.abs(Math.round(-i / scale)) > 0) { 
+                    ctx.fillText(Math.round(-i / scale), offsetX + 8, offsetY + i + 5);
+                }
+            }
+
+            // Etiquetas de los ejes (X e Y) y origen
+            ctx.fillStyle = originLabelColor;
+            ctx.font = '16px Inter'; 
+            ctx.fillText('X', canvas.width - 25, offsetY + 20);
+            ctx.fillText('Y', offsetX - 20, 25);
+            ctx.fillText('0', offsetX + 8, offsetY + 18); 
+        }
+
+        // Dibuja todas las funciones en functionsToGraph
+        function drawGraph() {
+            drawAxes(); 
+
+            functionsToGraph.forEach(item => {
+                const func = item.func;
+                const color = item.color;
+
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.5; 
+
+                let firstPoint = true;
+
+                // Itera a través de los píxeles del canvas
+                for (let i = 0; i < canvas.width; i++) {
+                    const x = (i - offsetX) / scale;
+                    let y;
+
+                    try {
+                        y = func(x);
+                    } catch (e) {
+                        firstPoint = true;
+                        continue;
+                    }
+
+                    const canvasY = offsetY - (y * scale);
+
+                    // Verifica si el punto está dentro de un rango vertical razonable
+                    if (canvasY > -canvas.height * 2 && canvasY < canvas.height * 3) { 
+                        if (firstPoint) {
+                            ctx.moveTo(i, canvasY);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(i, canvasY);
+                        }
+                    } else {
+                        firstPoint = true; 
+                    }
+                }
+                ctx.stroke();
+            });
+        }
+
+        // Función para redimensionar el canvas y redibujar el gráfico
+        function resizeAndRedraw() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            if (offsetX === 0 && offsetY === 0) {
+                offsetX = canvas.width / 2;
+                offsetY = canvas.height / 2;
+            } else {
+                offsetX = canvas.width / 2 + (offsetX - canvas.width / 2);
+                offsetY = canvas.height / 2 + (offsetY - canvas.height / 2);
+            }
+            
+            drawGraph(); 
+        }
+
+        // Renderiza la lista de funciones en la UI
+        function renderFunctionsList() {
+            functionsUl.innerHTML = ''; 
+            if (functionsToGraph.length === 0) {
+                functionsUl.innerHTML = '<li class="text-gray-500 dark:text-gray-400">No hay funciones graficadas.</li>';
+                return;
+            }
+
+            functionsToGraph.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-2 rounded-md bg-white dark:bg-gray-800 shadow-sm animate-scale-in';
+                li.style.animationDelay = `${index * 0.05}s`; 
+
+                const colorDot = document.createElement('span');
+                colorDot.className = 'inline-block w-3 h-3 rounded-full mr-2';
+                colorDot.style.backgroundColor = item.color;
+
+                const functionText = document.createElement('span');
+                functionText.className = 'flex-1 text-gray-800 dark:text-gray-200 font-mono text-sm';
+                functionText.textContent = `y = ${item.expression}`;
+
+                const removeButton = document.createElement('button');
+                removeButton.className = 'ml-4 p-1 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 transform hover:scale-110';
+                removeButton.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                removeButton.onclick = () => removeFunction(index);
+
+                li.appendChild(colorDot);
+                li.appendChild(functionText);
+                li.appendChild(removeButton);
+                functionsUl.appendChild(li);
+            });
+        }
+
+        // Añade una nueva función al gráfico
+        function addFunction() {
+            hideError();
+            const expression = functionInput.value.trim();
+            if (!expression) {
+                showError('Por favor, introduce una función.');
+                return;
+            }
+
+            const func = parseFunction(expression);
+            if (func) {
+                const color = functionColors[colorIndex % functionColors.length];
+                functionsToGraph.push({ expression, func, color });
+                colorIndex++;
+                functionInput.value = ''; 
+                redrawGraph();
+                renderFunctionsList();
+            }
+        }
+
+        // Elimina una función del gráfico
+        function removeFunction(index) {
+            functionsToGraph.splice(index, 1);
+            redrawGraph();
+            renderFunctionsList();
+        }
+
+        // Limpia todas las funciones del gráfico
+        function clearAllFunctions() {
+            functionsToGraph = [];
+            colorIndex = 0; 
+            redrawGraph();
+            renderFunctionsList();
+            hideError();
+        }
+
+        // Muestra funciones de ejemplo
+        function showExamples() {
+            clearAllFunctions(); 
+            const examples = [
+                { exp: 'x^2', color: functionColors[0] },
+                { exp: 'sin(x)', color: functionColors[1] },
+                { exp: '2*x + 1', color: functionColors[2] },
+                { exp: 'abs(x)', color: functionColors[3] },
+                { exp: 'log(x)', color: functionColors[4] },
+            ];
+            examples.forEach(item => {
+                const func = parseFunction(item.exp);
+                if (func) {
+                    functionsToGraph.push({ expression: item.exp, func, color: item.color });
+                    colorIndex++;
+                }
+            });
+            redrawGraph();
+            renderFunctionsList();
+        }
+
+        // Redibuja el gráfico (ejes + todas las funciones)
+        function redrawGraph() {
+            drawAxes();
+            drawGraph();
+        }
+
+        // Event listeners para botones principales
+        addFunctionButton.addEventListener('click', addFunction);
+        functionInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addFunction();
+            }
+        });
+        zoomInButton.addEventListener('click', () => {
+            scale *= 1.2;
+            redrawGraph();
+        });
+        zoomOutButton.addEventListener('click', () => {
+            scale /= 1.2;
+            redrawGraph();
+        });
+        resetViewButton.addEventListener('click', () => {
+            scale = 50;
+            offsetX = canvas.width / 2;
+            offsetY = canvas.height / 2;
+            redrawGraph();
+        });
+        clearAllButton.addEventListener('click', clearAllFunctions);
+        examplesButton.addEventListener('click', showExamples);
+
+        // Manejo de arrastre para paneo
+        let isDragging = false;
+        let lastX, lastY;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            canvas.style.cursor = 'grabbing';
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = (e.clientX - lastX) * panSpeed; 
+                const dy = (e.clientY - lastY) * panSpeed; 
+                offsetX += dx;
+                offsetY += dy;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                redrawGraph();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        });
+
+        canvas.addEventListener('mouseout', () => {
+            isDragging = false;
+            canvas.style.cursor = 'grab'; 
+        });
+
+        // Manejo de eventos táctiles para paneo (móvil)
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                lastX = e.touches[0].clientX;
+                lastY = e.touches[0].clientY;
+            }
+        }, { passive: false }); 
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                e.preventDefault(); 
+                const dx = (e.touches[0].clientX - lastX) * panSpeed; 
+                const dy = (e.touches[0].clientY - lastY) * panSpeed; 
+                offsetX += dx;
+                offsetY += dy;
+                lastX = e.touches[0].clientX;
+                lastY = e.touches[0].clientY;
+                redrawGraph();
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Manejo de zoom con rueda del ratón
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault(); 
+            const zoomFactor = 1.1; 
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const xBeforeZoom = (mouseX - offsetX) / scale;
+            const yBeforeZoom = (mouseY - offsetY) / scale;
+
+            if (e.deltaY < 0) { 
+                scale *= zoomFactor;
+            } else { 
+                scale /= zoomFactor;
+            }
+
+            offsetX = mouseX - xBeforeZoom * scale;
+            offsetY = mouseY - yBeforeZoom * scale;
+
+            redrawGraph();
+        });
+
+        // Inicializa el gráfico al cargar la ventana y maneja el redimensionamiento
+        window.onload = function() {
+            resizeAndRedraw(); 
+            window.addEventListener('resize', resizeAndRedraw); 
+            renderFunctionsList(); 
+        };
+
+        // --- Lógica del Teclado Virtual ---
+        virtualKeyboard.addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.classList.contains('keypad-button')) {
+                e.preventDefault(); 
+                const value = target.dataset.value;
+                const input = functionInput;
+                let start = input.selectionStart;
+                let end = input.selectionEnd;
+                let currentVal = input.value;
+
+                if (value === 'backspace') {
+                    if (start > 0) {
+                        input.value = currentVal.substring(0, start - 1) + currentVal.substring(end);
+                        input.selectionStart = input.selectionEnd = start - 1;
+                    }
+                } else if (value === 'left') {
+                    input.selectionStart = input.selectionEnd = Math.max(0, start - 1);
+                } else if (value === 'right') {
+                    input.selectionStart = input.selectionEnd = Math.min(currentVal.length, end + 1);
+                } else {
+                    input.value = currentVal.substring(0, start) + value + currentVal.substring(end);
+                    input.selectionStart = input.selectionEnd = start + value.length;
+                }
+                input.focus(); 
+            }
+        });
+
+        // --- Lógica para mostrar/ocultar teclado al enfocar/perder foco del input ---
+        // Este temporizador se usa para manejar el "blur" del input, permitiendo que los clics en el teclado se registren
+        let blurTimeout; 
+
+        functionInput.addEventListener('focus', () => {
+            // Cuando el input obtiene el foco, muestra el teclado
+            virtualKeyboard.classList.remove('translate-y-full', 'opacity-0');
+            // Si hay un temporizador de blur pendiente, lo cancelamos
+            if (blurTimeout) {
+                clearTimeout(blurTimeout);
+                blurTimeout = null;
+            }
+        });
+
+        functionInput.addEventListener('blur', () => {
+            // Cuando el input pierde el foco, iniciamos un temporizador para ocultar el teclado.
+            // Esto da tiempo para que un clic en el teclado virtual se procese.
+            blurTimeout = setTimeout(() => {
+                // Si el elemento activo NO es el input y NO es un botón del teclado virtual, ocultamos el teclado.
+                if (document.activeElement !== functionInput && !virtualKeyboard.contains(document.activeElement)) {
+                    virtualKeyboard.classList.add('translate-y-full', 'opacity-0');
+                }
+            }, 150); // Pequeño retraso para permitir clics en el teclado
+        });
+
+        // --- Lógica para el botón de alternar teclado ---
+        toggleKeyboardButton.addEventListener('click', () => {
+            // Alterna la visibilidad del teclado
+            if (virtualKeyboard.classList.contains('opacity-0')) {
+                // Si está oculto, lo mostramos
+                virtualKeyboard.classList.remove('translate-y-full', 'opacity-0');
+                functionInput.focus(); // Opcional: enfocar el input al mostrar el teclado con el botón
+            } else {
+                // Si está visible, lo ocultamos
+                virtualKeyboard.classList.add('translate-y-full', 'opacity-0');
+                functionInput.blur(); // Opcional: quitar el foco del input al ocultar el teclado con el botón
+            }
+        });
+
+    </script>
+</body>
+</html>

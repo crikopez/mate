@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es" class="<%= typeof isDarkMode !== 'undefined' && isDarkMode ? 'dark' : '' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álgebra General - MathMaster</title>
+    <!-- Incluye Tailwind CSS CDN para estilos modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para usar colores y fuentes personalizados
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#8B5CF6',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+                        'slide-in-left': 'slideInLeft 0.4s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.4s ease-out forwards',
+                        'pulse-custom': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'progress-bar': 'progressBar 1.5s ease-out forwards',
+                        'bounce-in': 'bounceIn 0.8s ease-out forwards',
+                        'scale-up': 'scaleUp 0.5s ease-out forwards',
+                        'rotate-in': 'rotateIn 0.7s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-grow': 'pulseGrow 1.5s ease-in-out infinite',
+                    },
+                    animationDelay: {
+                        '0': '0s',
+                        '100': '0.1s',
+                        '150': '0.15s',
+                        '200': '0.2s',
+                        '300': '0.3s',
+                        '400': '0.4s',
+                        '500': '0.5s',
+                        '600': '0.6s',
+                        '700': '0.7s',
+                        '800': '0.8s',
+                        '900': '0.9s',
+                        '1000': '1s',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Importa la fuente Inter desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos CSS personalizados y keyframes para animaciones */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Animaciones Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        @keyframes progressBar {
+            0% { width: 0%; }
+            100% { width: 45%; } /* Ajusta esto al porcentaje deseado */
+        }
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% {
+                transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+            0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+            20% { transform: scale3d(1.1, 1.1, 1.1); }
+            40% { transform: scale3d(0.9, 0.9, 0.9); }
+            60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+            80% { transform: scale3d(0.97, 0.97, 0.97); }
+            100% { opacity: 1; transform: scale3d(1, 1, 1); }
+        }
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes rotateIn { /* Keyframes para la nueva animación de rotación */
+            from { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+            to { opacity: 1; transform: rotate(0deg) scale(1); }
+        }
+        @keyframes slideUp { /* Keyframes para la nueva animación de deslizamiento hacia arriba */
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGrow { /* Keyframes para la nueva animación de pulso y crecimiento */
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Clases de utilidad de animación */
+        .animate-fade-in { animation-name: fadeIn; }
+        .animate-fade-in-up { animation-name: fadeInUp; }
+        .animate-fade-in-down { animation-name: fadeInDown; }
+        .animate-slide-in-left { animation-name: slideInLeft; }
+        .animate-slide-in-right { animation-name: slideInRight; }
+        .animate-pulse-custom { animation-name: pulse; }
+        .animate-progress-bar { animation-name: progressBar; }
+        .animate-bounce-in { animation-name: bounceIn; }
+        .animate-scale-up { animation-name: scaleUp; }
+        .animate-rotate-in { animation-name: rotateIn; }
+        .animate-slide-up { animation-name: slideUp; }
+        .animate-pulse-grow { animation-name: pulseGrow; }
+
+        /* Estilos para la barra de desplazamiento en modo oscuro */
+        .dark ::-webkit-scrollbar { width: 8px; }
+        .dark ::-webkit-scrollbar-track { background: #4B5563; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #6B7280; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-inter transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 shadow-lg rounded-b-xl animate-fade-in-down">
+        <div class="flex items-center">
+            <button id="sidebarToggle" class="text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2 lg:hidden transform hover:scale-105 transition-transform duration-200" aria-label="Toggle navigation">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <h1 class="text-3xl font-extrabold text-blue-700 dark:text-blue-400 ml-3 tracking-wide animate-bounce-in">MathMaster</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button id="darkModeToggle" class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transform hover:scale-110" aria-label="Toggle dark mode">
+                <!-- Icono de sol/luna, se actualizará con JS -->
+                <svg class="w-6 h-6 sun-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm-4 8a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4-4a1 1 0 011 1v1a1 1 0 11-2 0V7a1 1 0 011-1zm10.293-2.293a1 1 0 010 1.414l-1 1a1 1 0 11-1.414-1.414l1-1a1 1 0 011.414 0zM5.707 14.293a1 1 0 010-1.414l1-1a1 1 0 10-1.414-1.414l-1 1a1 1 0 011.414 1.414zM16 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM3 10a1 1 0 01-1 1H1a1 1 0 110-2h1a1 1 0 011 1z" clip-rule="evenodd"></path></svg>
+                <svg class="w-6 h-6 moon-icon hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 flex-col lg:flex-row">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-2xl transform -translate-x-full opacity-0 lg:relative lg:translate-x-0 lg:opacity-100 transition-transform duration-300 ease-in-out lg:flex-shrink-0 lg:w-64 border-r border-gray-200 dark:border-gray-700">
+            <div class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-gray-700 dark:to-gray-900 text-white rounded-tr-lg">
+                <h2 class="text-xl font-bold tracking-wide">Módulos</h2>
+                <button id="sidebarClose" class="lg:hidden text-white focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-md p-1 transform hover:scale-110 transition-transform duration-200" aria-label="Close sidebar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="mt-4 px-3">
+                <ul>
+                    <li>
+                        <a href="/" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            Inicio
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/insertar-polinomios" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            Polinomios
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/insertar-desigualdades" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            Desigualdades
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/algebra-general-home" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md bg-blue-600 text-white font-semibold shadow-lg">
+                            Álgebra General
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/calculadora-grafica" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            Calculadora Gráfica
+                        </a>
+                    </li>
+                    <li class="mt-1">
+                        <a href="/chatbot-matematico" class="block w-full text-left py-2.5 px-4 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-md text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-gray-700">
+                            Chatbot Matemático
+                        </a>
+                    </li>
+                    <!-- Puedes añadir más enlaces a otros módulos aquí -->
+                </ul>
+            </nav>
+            <div class="p-4 mt-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-b-xl">
+                <h3 class="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">Progreso General</h3>
+                <div class="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700 shadow-inner">
+                    <div class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full animate-progress-bar" style="width: 45%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">45% Completado</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 lg:p-8 overflow-y-auto animate-fade-in">
+            <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl mb-8 border border-gray-100 dark:border-gray-700 animate-fade-in-up">
+                <h2 class="text-4xl font-extrabold text-blue-700 dark:text-blue-400 mb-6 text-center leading-tight animate-scale-up">
+                    Bienvenido al Módulo de Álgebra General
+                </h2>
+                <p class="text-xl text-gray-700 dark:text-gray-300 mb-6 text-center max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-100">
+                    Aquí podrás explorar y analizar diversas expresiones algebraicas.
+                </p>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 text-center max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-200">
+                    Desde simplificación hasta factorización y evaluación, nuestro asistente te ayudará a comprender cada paso.
+                </p>
+                <div class="flex justify-center space-x-4 animate-fade-in-up delay-300">
+                    <a href="/insertar-algebra-general" class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 animate-pulse-grow">
+                        <svg class="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clip-rule="evenodd" />
+                        </svg>
+                        Ir al Analizador de Expresiones
+                    </a>
+                    <a href="/" class="inline-flex items-center px-8 py-3 border border-gray-300 text-base font-medium rounded-full shadow-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all duration-300 transform hover:scale-105">
+                        <svg class="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        Volver al Inicio
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // JavaScript para manejar el modo oscuro y la barra lateral
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarClose = document.getElementById('sidebarClose');
+        const sidebar = document.getElementById('sidebar');
+        const htmlElement = document.documentElement;
+
+        // Función para aplicar el modo oscuro
+        function applyDarkMode(isDark) {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('mathmaster_dark_mode', 'true');
+                // Ocultar icono de sol, mostrar icono de luna
+                darkModeToggle.querySelector('.sun-icon').classList.add('hidden');
+                darkModeToggle.querySelector('.moon-icon').classList.remove('hidden');
+            } else {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('mathmaster_dark_mode', 'false');
+                // Mostrar icono de sol, ocultar icono de luna
+                darkModeToggle.querySelector('.sun-icon').classList.remove('hidden');
+                darkModeToggle.querySelector('.moon-icon').classList.add('hidden');
+            }
+        }
+
+        // Cargar preferencia de modo oscuro al iniciar
+        const savedDarkMode = localStorage.getItem('mathmaster_dark_mode');
+        if (savedDarkMode === 'true') {
+            applyDarkMode(true);
+        } else if (savedDarkMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            applyDarkMode(true);
+        } else {
+            applyDarkMode(false);
+        }
+
+        // Event listeners para la barra lateral
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('opacity-100');
+            sidebar.classList.remove('opacity-0');
+        });
+
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('opacity-100');
+            sidebar.classList.add('opacity-0');
+        });
+
+        // Cerrar sidebar al hacer clic fuera en pantallas pequeñas
+        document.addEventListener('click', (event) => {
+            if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('opacity-100');
+                sidebar.classList.add('opacity-0');
+            }
+        });
+
+        // Asegurarse de que la barra lateral sea visible por defecto en pantallas grandes
+        function checkSidebarVisibility() {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full', 'opacity-0');
+                sidebar.classList.add('opacity-100');
+            } else {
+                if (!sidebar.classList.contains('opacity-100')) {
+                    sidebar.classList.add('-translate-x-full', 'opacity-0');
+                }
+            }
+        }
+
+        // Ejecutar al cargar y al redimensionar
+        window.addEventListener('load', checkSidebarVisibility);
+        window.addEventListener('resize', checkSidebarVisibility);
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Ups! Ha ocurrido un error - MATHPRO</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8d7da; /* Fondo rojo claro para error */
+            color: #721c24; /* Texto rojo oscuro */
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 50px;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+        h1 {
+            color: #dc3545; /* Rojo para el encabezado de error */
+            margin-bottom: 25px;
+            font-size: 2.8em;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Ha ocurrido un error!</h1>
+        <p><%= message %></p>
+        <p>Por favor, verifica el formato de tu solicitud o inténtalo de nuevo.</p>
+        <p><a href="/">Volver a la página principal</a></p>
+    </div>
+</body>
+</html>

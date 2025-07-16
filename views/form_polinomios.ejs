@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertar Polinomio - MATHPRO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #4a148c;
+        }
+        form {
+            background-color: white;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #555;
+            display: block; /* Ensures label is on its own line */
+            width: 100%;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #673ab7; /* Purple */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            background-color: #5e35b1;
+            transform: translateY(-1px);
+        }
+        .back-link {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .back-link a {
+            color: #673ab7;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Insertar Polinomio</h1>
+    <form action="/explicar-polinomios" method="POST">
+        <label for="polinomio">Introduce el polinomio (ej. $2x^2 + 3x - 1$):</label>
+        <input type="text" id="polinomio" name="polinomio" placeholder="Ej: x^3 - 4x + 2" required>
+        <button type="submit">Explicar Polinomio</button>
+    </form>
+    <div class="back-link">
+        <a href="/">Volver al Inicio</a>
+    </div>
+</body>
+</html>
