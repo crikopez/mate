@@ -254,14 +254,14 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                         'Authorization': `Bearer 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`
+                         'Authorization': `Bearer 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`
                     },
                      body: JSON.stringify({
                 // The 'model' name would be specific to openroute.ai
                 // e.g., "openroute-chat-v1", "ors-llm-standard", etc.
                 model: "deepseek/deepseek-r1-0528:free", 
-                messages: [  
-                    { role: "system", content: "soy un robot ayuda matematica bachillerato" },
+                messages: [ 
+                    { role: "system", content: "soy un robot ayuda matematica bachillerato, respondo corto y consiso" },
                     { role: "user", content: message }
                 ],
                 temperature: 0.7, // Creativity of the response (0.0 to 1.0)
@@ -269,7 +269,9 @@
             })
                 });
 
-                const data = await response.json(); 
+                const data = await response.json();
+
+                
 
 
                 addMessage(data.choices[0].message.reasoning, 'bot'); // Asumiendo que la respuesta tiene una propiedad 'response'
