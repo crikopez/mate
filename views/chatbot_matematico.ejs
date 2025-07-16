@@ -235,23 +235,44 @@
             const message = userMessageInput.value.trim();
             if (message === '') return;
 
+            console.log('Enviando mensaje:', message);   
+
             addMessage(message, 'user');
             userMessageInput.value = '';
             loadingIndicator.classList.remove('hidden'); // Mostrar indicador de carga
 
-            try {
+            try { 
+
+                
+
+                let urlchat  = 'https://openrouter.ai/api/v1/chat/completions'; 
+
+                
                 // Aquí deberías hacer la llamada a tu backend para el chatbot.
                 // Esta es una URL de ejemplo, ajústala a tu configuración real.
-                const response = await fetch('/api/chat', { // Asumiendo que tu backend expone /api/chat
+                const response = await fetch(urlchat, { // Asumiendo que tu backend expone /api/chat
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                         'Authorization': `Bearer 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`
                     },
-                    body: JSON.stringify({ message: message })
+                     body: JSON.stringify({
+                // The 'model' name would be specific to openroute.ai
+                // e.g., "openroute-chat-v1", "ors-llm-standard", etc.
+                model: "deepseek/deepseek-r1-0528:free", 
+                messages: [  
+                    { role: "system", content: "soy un robot ayuda matematica bachillerato" },
+                    { role: "user", content: message }
+                ],
+                temperature: 0.7, // Creativity of the response (0.0 to 1.0)
+                max_tokens: 200   // Maximum length of the generated response
+            })
                 });
 
-                const data = await response.json();
-                addMessage(data.response, 'bot'); // Asumiendo que la respuesta tiene una propiedad 'response'
+                const data = await response.json(); 
+
+
+                addMessage(data.choices[0].message.reasoning, 'bot'); // Asumiendo que la respuesta tiene una propiedad 'response'
             } catch (error) {
                 console.error('Error al enviar mensaje al chatbot:', error);
                 addMessage('Lo siento, hubo un error al conectar con el chatbot.', 'bot');

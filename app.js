@@ -5,10 +5,9 @@
 // ¡IMPORTANTE! Este debe ser el primer require() en tu archivo.
 const path = require('path'); // Importa el módulo path
 // Especifica la ruta del .env para asegurar que se encuentre en el directorio actual (webapp/)
-require('dotenv').config(); 
+
 
 const express = require('express');
-const { OpenAI } = require('openai'); // Importa la biblioteca de OpenAI
 const cookieParser = require('cookie-parser'); // Importa cookie-parser para leer cookies
 
 // --- INICIALIZACIÓN DE EXPRESS ---
@@ -32,33 +31,10 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- CONFIGURACIÓN DE LA API DE DEEPSEEK (OpenRouter) ---
 
-// *********** INICIO DE DEPURACIÓN CRÍTICA ***********
-console.log('--- Depuración de OPENROUTER_API_KEY en app.js ---');
-const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-console.log('Valor de process.env.OPENROUTER_API_KEY:', openRouterApiKey);
-
-if (!openRouterApiKey || openRouterApiKey.trim() === '' || openRouterApiKey.trim() === '<sk-or-v1-a7cea23b86884e4e50457f753c6de7f8c387277cb6f3875c21a1cd25d38fe9>') {
-    console.error('¡ERROR CRÍTICO! La clave OPENROUTER_API_KEY no está configurada correctamente o es el placeholder.');
-    console.error('Asegúrate de que tu archivo .env (en webapp/.env) contenga la clave API real de OpenRouter.');
-    console.error('El chatbot NO funcionará sin una clave API válida.');
-} else {
-    console.log('OPENROUTER_API_KEY parece estar cargada. Primeros 5 caracteres:', openRouterApiKey.substring(0, 5) + '...');
-}
-console.log('---------------------------------------');
 // *********** FIN DE DEPURACIÓN CRÍTICA ***********
 
 
-// Inicializa el cliente de OpenAI apuntando a OpenRouter
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: openRouterApiKey, // Usa la variable que acabamos de verificar
-  defaultHeaders: {
-    'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'http://localhost:3000', // URL del sitio para rankings
-    'X-Title': process.env.OPENROUTER_SITE_NAME || 'MathMaster Local', // Título del sitio para rankings
-  },
-});
 
 // ====================================================================
 // *** FUNCIONES DE LÓGICA MATEMÁTICA (EJEMPLOS SIMPLIFICADOS) ***
@@ -508,7 +484,5 @@ app.post('/api/chat', async (req, res) => { // Usamos '/api/chat' para ser más 
 app.listen(port, () => {
   console.log(`🚀 Servidor escuchando en http://localhost:${port}`);
   // Una pequeña verificación para saber si la clave de API se cargó
-  if (!process.env.OPENROUTER_API_KEY) { // Verifica OPENROUTER_API_KEY, no DEEPSEEK_API_KEY
-      console.warn('ADVERTENCIA: La variable de entorno OPENROUTER_API_KEY no está configurada. El chatbot no funcionará.');
-  }
-});
+
+});  
