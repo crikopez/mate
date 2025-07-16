@@ -117,7 +117,7 @@ function analizarPolinomioSimple(polinomioString) {
             } else {
                 currentCoef = parseFloat(coefPart);
             }
-            
+                
             // Actualiza el grado si el exponente actual es mayor
             if (currentExponent > grado) {
                 grado = currentExponent;
